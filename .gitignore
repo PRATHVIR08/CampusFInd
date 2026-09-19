@@ -1,52 +1,34 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# ── Frontend ──────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
-# Production build
-dist/
-build/
+# ── Backend ───────────────────────────────
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/*.so
+backend/.Python
+backend/env/
+backend/venv/
+backend/ENV/
+backend/*.egg-info/
+backend/.installed.cfg
+backend/*.egg
 
-# Vite & environment
-.vite/
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-venv/
-ENV/
-
-# Logs
+# ── Logs ──────────────────────────────────
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# OS and Editor
+# ── OS and Editor ─────────────────────────
 .DS_Store
 Thumbs.db
 .vscode/
