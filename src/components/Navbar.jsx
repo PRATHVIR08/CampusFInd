@@ -10,13 +10,15 @@ import {
   ShieldCheck, 
   ChevronDown,
   Sparkles,
-  Inbox
+  Inbox,
+  Database
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
-  const { activeUser, setActiveUser, demoUsers, claims } = useApp();
+  const { activeUser, setActiveUser, demoUsers, claims, isSupabaseConnected } = useApp();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dbModalOpen, setDbModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   // Close dropdown on outside click
@@ -211,6 +213,28 @@ export default function Navbar({ activeTab, setActiveTab }) {
             )}
           </div>
 
+          {/* Database Cloud Status Pill */}
+          <button
+            onClick={() => setDbModalOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 10px',
+              borderRadius: '999px',
+              border: isSupabaseConnected ? '1px solid #BBF7D0' : '1px solid #E5E7EB',
+              background: isSupabaseConnected ? '#F0FDF4' : '#F9FAFB',
+              color: isSupabaseConnected ? '#15803D' : '#6B7280',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            title="Database Connection Status"
+          >
+            <Database size={13} color={isSupabaseConnected ? '#16A34A' : '#9CA3AF'} />
+            <span>{isSupabaseConnected ? 'Supabase' : 'Local DB'}</span>
+          </button>
+
           {/* Quick Post Button */}
           <button
             className="btn btn-primary btn-sm"
@@ -231,6 +255,67 @@ export default function Navbar({ activeTab, setActiveTab }) {
           </button>
         </div>
       </div>
+
+      {/* Database Connection Guide Modal */}
+      {dbModalOpen && (
+        <div className="modal-overlay" onClick={() => setDbModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px' }}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Database size={18} color="#16A34A" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem' }}>Supabase Database Setup</h3>
+                  <p style={{ fontSize: '0.8rem', color: '#6B7280' }}>
+                    Status: <strong>{isSupabaseConnected ? '🟢 Connected to Cloud PostgreSQL' : '⚡ Local Demo Storage Mode'}</strong>
+                  </p>
+                </div>
+              </div>
+              <button className="modal-close-btn" onClick={() => setDbModalOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p style={{ fontSize: '0.88rem', color: '#4B5563', marginBottom: '16px', lineHeight: 1.5 }}>
+                CampusFind supports both live <strong>Supabase Cloud PostgreSQL</strong> and seamless <strong>LocalStorage offline mode</strong>.
+              </p>
+
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '0.88rem', color: '#1E293B', marginBottom: '10px', fontWeight: 700 }}>
+                  🚀 3-Step Supabase Cloud Setup:
+                </h4>
+                <ol style={{ paddingLeft: '20px', fontSize: '0.84rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '8px', lineHeight: 1.4 }}>
+                  <li>
+                    Create a free project at <strong>supabase.com</strong>.
+                  </li>
+                  <li>
+                    Open <strong>SQL Editor</strong> in Supabase and run the provided script in <code>supabase/schema.sql</code>.
+                  </li>
+                  <li>
+                    Add your credentials into your <code>.env</code> file:
+                    <pre style={{ background: '#1E293B', color: '#38BDF8', padding: '8px 10px', borderRadius: '6px', fontSize: '0.78rem', marginTop: '6px', overflowX: 'auto' }}>
+{`VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-public-key`}
+                    </pre>
+                  </li>
+                </ol>
+              </div>
+
+              <p style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                💡 If no keys are entered, CampusFind continues to operate in LocalStorage mode with full search, reporting, and claim workflows!
+              </p>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-primary" onClick={() => setDbModalOpen(false)}>
+                Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

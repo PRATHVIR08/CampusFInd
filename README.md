@@ -1,43 +1,43 @@
-# CampusFind 🎒🔍
+# CampusFind 
 
 **CampusFind** is a modern college-specific lost & found web platform designed to seamlessly connect university students and campus staff who have lost items with those who have found them.
 
 ---
 
-## ✨ Features
+##  Features
 
-- **🏠 Home Landing & Dashboard**
+- ** Home Landing & Dashboard**
   - Live statistics dashboard (Total Items Lost, Found, Reunited/Claimed).
   - Prominent global search bar with instant keyword filtering and category chips.
   - Quick CTAs: **Report Lost Item** (Campus Blue `#0066CC`) and **I Found Something** (Emerald Green `#22C55E`).
   - Real-time campus activity feed showing the newest mixed lost and found items.
 
-- **🔎 Lost Items Directory**
+- ** Lost Items Directory**
   - Responsive grid layout (1 column mobile, 2 columns tablet, 3+ columns desktop).
   - Multi-dimensional filters: Category (*Electronics, Keys, Clothing, Documents, Accessories, Other*), Campus Location (*Library, Student Union, Science Quad, Dorms, Gym, Dining Hall*), and Date Range.
   - Sorting: Newest, Oldest, Most Recent Activity.
   - Item detail modal with photo carousel, interactive campus coordinate zone, contact options, and shareable link generator.
 
-- **🛡️ Found Items & Ownership Claim Workflow**
+- ** Found Items & Ownership Claim Workflow**
   - Catalog of items found across campus with custody notes (*Where is it being held?*).
   - Multi-step **Claim Ownership Verification Form**: Claimants must provide proof details only the genuine owner would know (e.g., serial numbers, stickers, lock screen, unique scratches).
   - **Finder Review & Approval**: Finders review submitted claims in their dashboard to **Approve** or **Deny**.
   - Automatic contact unlocking and celebration upon claim approval.
 
-- **📝 Reporting Systems**
+- ** Reporting Systems**
   - **Report Lost Item**: Minimum 20-character description enforcement, campus location autocomplete, photo uploads (with sample asset presets), and share link.
   - **Report Found Item**: What you think it is, custody status (*With me*, *Lost & Found Desk Room 102*, *Campus Police HQ*), and instant cataloging.
 
-- **👤 My Posts & User Dashboard**
+- ** My Posts & User Dashboard**
   - Tabbed management of posted lost items, posted found items, and incoming ownership claims.
   - In-app demo user switcher in the navigation bar (*Alex Rivera*, *Jordan Smith*, *Officer Davis*) to easily test both sides of the lost/found/claim workflow.
 
-- **🏢 Campus Lost & Found Directory**
+- ** Campus Lost & Found Directory**
   - Official campus desks, operating hours, emergency dispatch phone lines, direct inquiry form, and interactive FAQs.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend**: React 18, Vite, Lucide Icons, CSS3 Design Tokens (8px grid spacing, responsive breakpoints, glassmorphism, micro-animations).
 - **Persistence**: Dual-layer architecture (FastAPI REST API with resilient client-side `LocalStorage` fallback).
@@ -45,7 +45,7 @@
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Frontend Setup
 ```bash
@@ -66,7 +66,7 @@ API documentation available at [http://localhost:8000/docs](http://localhost:800
 
 ---
 
-## 📂 File Structure
+##  File Structure
 
 ```
 CampusFind/
@@ -108,7 +108,7 @@ CampusFind/
 
 ---
 
-## 🎨 Design Guidelines & Palette
+##  Design Guidelines & Palette
 
 - **Primary**: `#0066CC` (Campus Blue)
 - **Secondary**: `#22C55E` (Found Green)

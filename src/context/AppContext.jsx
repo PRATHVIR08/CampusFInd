@@ -18,6 +18,7 @@ export function AppProvider({ children }) {
   const [claimTargetItem, setClaimTargetItem] = useState(null);
   const [contactTargetItem, setContactTargetItem] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const isSupabaseConnected = api.isCloudConnected();
 
   const addToast = (message, type = 'info', duration = 4000) => {
     const id = Date.now() + Math.random().toString(36).substr(2, 4);
@@ -171,7 +172,8 @@ export function AppProvider({ children }) {
         submitClaim,
         handleClaimDecision,
         resetAllData,
-        refreshData
+        refreshData,
+        isSupabaseConnected
       }}
     >
       {children}

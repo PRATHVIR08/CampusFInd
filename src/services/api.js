@@ -1,189 +1,311 @@
-// API Client with automatic LocalStorage fallback
+// Unified API & Data Service with Supabase PostgreSQL and LocalStorage Fallback
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { storageService } from './storage';
 
-const API_BASE = '/api';
-
 export const api = {
+  isCloudConnected() {
+    return isSupabaseConfigured();
+  },
+
   // Stats
   async getStats() {
-    try {
-      const res = await fetch(`${API_BASE}/stats`);
-      if (res.ok) return await res.json();
-    } catch {
-      // Fallback
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const [lostRes, foundRes] = await Promise.all([
+          supabase.from('lost_items').select('id, status'),
+          supabase.from('found_items').select('id, status')
+        ]);
+
+        if (!lostRes.error && !foundRes.error) {
+          const lost = lostRes.data || [];
+          const found = foundRes.data || [];
+          const claimed = [...lost, ...found].filter(i => i.status === 'claimed').length;
+          return {
+            total_lost_month: lost.length,
+            total_found_month: found.length,
+            items_claimed: claimed
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase stats error, using local fallback:', err);
+      }
     }
+
+    // Local fallback
     const lost = storageService.getLostItems();
     const found = storageService.getFoundItems();
-    const totalLostMonth = lost.length;
-    const totalFoundMonth = found.length;
-    const claimedCount = [...lost, ...found].filter(i => i.status === 'claimed').length;
+    const claimed = [...lost, ...found].filter(i => i.status === 'claimed').length;
     return {
-      total_lost_month: totalLostMonth,
-      total_found_month: totalFoundMonth,
-      items_claimed: claimedCount
+      total_lost_month: lost.length,
+      total_found_month: found.length,
+      items_claimed: claimed
     };
   },
 
   // Lost Items
   async getLostItems() {
-    try {
-      const res = await fetch(`${API_BASE}/items/lost`);
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('lost_items')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase getLostItems error, falling back:', err);
+      }
+    }
     return storageService.getLostItems();
   },
 
   async createLostItem(item) {
-    try {
-      const res = await fetch(`${API_BASE}/items/lost`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      });
-      if (res.ok) return await res.json();
-    } catch {}
-
-    const items = storageService.getLostItems();
     const newItem = {
       ...item,
-      id: `lost-${Date.now()}`,
+      id: item.id || `lost-${Date.now()}`,
       created_at: new Date().toISOString(),
       date_posted: new Date().toISOString(),
-      status: 'open'
+      status: 'open',
+      photo_urls: item.photo_urls || []
     };
+
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('lost_items')
+          .insert([newItem])
+          .select()
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase createLostItem error, falling back:', err);
+      }
+    }
+
+    // Local fallback
+    const items = storageService.getLostItems();
     const updated = [newItem, ...items];
     storageService.saveLostItems(updated);
     return newItem;
   },
 
   async updateLostItem(id, updates) {
-    try {
-      const res = await fetch(`${API_BASE}/items/lost/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-      });
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('lost_items')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
 
+        if (!error && data) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase updateLostItem error, falling back:', err);
+      }
+    }
+
+    // Local fallback
     const items = storageService.getLostItems();
-    const updated = items.map(item => item.id === id ? { ...item, ...updates } : item);
+    const updated = items.map(i => i.id === id ? { ...i, ...updates } : i);
     storageService.saveLostItems(updated);
     return updated.find(i => i.id === id);
   },
 
   async deleteLostItem(id) {
-    try {
-      const res = await fetch(`${API_BASE}/items/lost/${id}`, { method: 'DELETE' });
-      if (res.ok) return true;
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { error } = await supabase
+          .from('lost_items')
+          .delete()
+          .eq('id', id);
+
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase deleteLostItem error, falling back:', err);
+      }
+    }
 
     const items = storageService.getLostItems();
-    const updated = items.filter(item => item.id !== id);
+    const updated = items.filter(i => i.id !== id);
     storageService.saveLostItems(updated);
     return true;
   },
 
   // Found Items
   async getFoundItems() {
-    try {
-      const res = await fetch(`${API_BASE}/items/found`);
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('found_items')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase getFoundItems error, falling back:', err);
+      }
+    }
     return storageService.getFoundItems();
   },
 
   async createFoundItem(item) {
-    try {
-      const res = await fetch(`${API_BASE}/items/found`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      });
-      if (res.ok) return await res.json();
-    } catch {}
-
-    const items = storageService.getFoundItems();
     const newItem = {
       ...item,
-      id: `found-${Date.now()}`,
+      id: item.id || `found-${Date.now()}`,
       created_at: new Date().toISOString(),
       date_posted: new Date().toISOString(),
-      status: 'open'
+      status: 'open',
+      photo_urls: item.photo_urls || []
     };
+
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('found_items')
+          .insert([newItem])
+          .select()
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase createFoundItem error, falling back:', err);
+      }
+    }
+
+    const items = storageService.getFoundItems();
     const updated = [newItem, ...items];
     storageService.saveFoundItems(updated);
     return newItem;
   },
 
   async updateFoundItem(id, updates) {
-    try {
-      const res = await fetch(`${API_BASE}/items/found/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-      });
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('found_items')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase updateFoundItem error, falling back:', err);
+      }
+    }
 
     const items = storageService.getFoundItems();
-    const updated = items.map(item => item.id === id ? { ...item, ...updates } : item);
+    const updated = items.map(i => i.id === id ? { ...i, ...updates } : i);
     storageService.saveFoundItems(updated);
     return updated.find(i => i.id === id);
   },
 
   async deleteFoundItem(id) {
-    try {
-      const res = await fetch(`${API_BASE}/items/found/${id}`, { method: 'DELETE' });
-      if (res.ok) return true;
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { error } = await supabase
+          .from('found_items')
+          .delete()
+          .eq('id', id);
+
+        if (!error) return true;
+      } catch (err) {
+        console.warn('Supabase deleteFoundItem error, falling back:', err);
+      }
+    }
 
     const items = storageService.getFoundItems();
-    const updated = items.filter(item => item.id !== id);
+    const updated = items.filter(i => i.id !== id);
     storageService.saveFoundItems(updated);
     return true;
   },
 
   // Claims
   async getClaims() {
-    try {
-      const res = await fetch(`${API_BASE}/claims`);
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('claims')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase getClaims error, falling back:', err);
+      }
+    }
     return storageService.getClaims();
   },
 
   async submitClaim(claim) {
-    try {
-      const res = await fetch(`${API_BASE}/claims`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(claim)
-      });
-      if (res.ok) return await res.json();
-    } catch {}
-
-    const claims = storageService.getClaims();
     const newClaim = {
       ...claim,
-      id: `claim-${Date.now()}`,
+      id: claim.id || `claim-${Date.now()}`,
       status: 'pending',
       created_at: new Date().toISOString()
     };
+
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('claims')
+          .insert([newClaim])
+          .select()
+          .single();
+
+        if (!error && data) {
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase submitClaim error, falling back:', err);
+      }
+    }
+
+    const claims = storageService.getClaims();
     const updated = [newClaim, ...claims];
     storageService.saveClaims(updated);
     return newClaim;
   },
 
   async updateClaimStatus(claimId, status) {
-    try {
-      const res = await fetch(`${API_BASE}/claims/${claimId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      if (res.ok) return await res.json();
-    } catch {}
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('claims')
+          .update({ status })
+          .eq('id', claimId)
+          .select()
+          .single();
+
+        if (!error && data) {
+          if (status === 'approved') {
+            await supabase
+              .from('found_items')
+              .update({ status: 'claimed' })
+              .eq('id', data.found_item_id);
+          }
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase updateClaimStatus error, falling back:', err);
+      }
+    }
 
     const claims = storageService.getClaims();
     const target = claims.find(c => c.id === claimId);
@@ -192,7 +314,6 @@ export const api = {
     target.status = status;
     storageService.saveClaims(claims);
 
-    // If approved, mark the found item as claimed as well!
     if (status === 'approved') {
       const foundItems = storageService.getFoundItems();
       const updatedFound = foundItems.map(item =>
