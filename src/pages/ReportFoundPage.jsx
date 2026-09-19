@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES, CAMPUS_LOCATIONS, HOLDING_LOCATIONS } from '../services/seedData';
 import { 
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function ReportFoundPage({ setActiveTab }) {
-  const { activeUser, createFoundItem, addToast } = useApp();
+  const { activeUser, hasIdentity, createFoundItem, addToast } = useApp();
 
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -33,6 +33,12 @@ export default function ReportFoundPage({ setActiveTab }) {
   const [submitting, setSubmitting] = useState(false);
   const [submittedItem, setSubmittedItem] = useState(null);
   const [error, setError] = useState('');
+
+  // Sync contact fields when user sets/updates their identity
+  useEffect(() => {
+    setEmail(activeUser.email || '');
+    setPhone(activeUser.phone || '');
+  }, [activeUser.email, activeUser.phone]);
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files || []);

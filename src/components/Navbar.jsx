@@ -1,38 +1,49 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  Search, 
   MapPin, 
   PlusCircle, 
   User, 
   Menu, 
   X, 
-  ShieldCheck, 
   ChevronDown,
-  Sparkles,
-  Inbox,
-  Database
+  Database,
+  CheckCircle2,
+  Edit3
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
-  const { activeUser, setActiveUser, demoUsers, claims, isSupabaseConnected } = useApp();
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const { activeUser, setActiveUser, hasIdentity, claims, isSupabaseConnected } = useApp();
+  const [identityOpen, setIdentityOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dbModalOpen, setDbModalOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Local form state for identity editing
+  const [draftName, setDraftName] = useState(activeUser.name || '');
+  const [draftEmail, setDraftEmail] = useState(activeUser.email || '');
+  const [draftPhone, setDraftPhone] = useState(activeUser.phone || '');
 
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setUserDropdownOpen(false);
+        setIdentityOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Claims count for the active user (either as finder or claimer)
+  // Sync draft when identity panel opens
+  useEffect(() => {
+    if (identityOpen) {
+      setDraftName(activeUser.name || '');
+      setDraftEmail(activeUser.email || '');
+      setDraftPhone(activeUser.phone || '');
+    }
+  }, [identityOpen, activeUser]);
+
   const pendingClaimsCount = claims.filter(c => c.status === 'pending').length;
 
   const handleNavClick = (tab) => {
@@ -40,6 +51,19 @@ export default function Navbar({ activeTab, setActiveTab }) {
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleSaveIdentity = () => {
+    if (!draftName.trim() || !draftEmail.trim()) return;
+    setActiveUser({
+      name: draftName.trim(),
+      email: draftEmail.trim().toLowerCase(),
+      phone: draftPhone.trim()
+    });
+    setIdentityOpen(false);
+  };
+
+  const avatarLetter = activeUser.name ? activeUser.name.charAt(0).toUpperCase() : '?';
+  const displayName = activeUser.name ? activeUser.name.split(' ')[0] : 'Set Profile';
 
   return (
     <nav className="navbar">
@@ -116,99 +140,119 @@ export default function Navbar({ activeTab, setActiveTab }) {
           </li>
         </ul>
 
-        {/* User Account Switcher & Actions */}
+        {/* User Identity & Actions */}
         <div className="nav-actions">
+          {/* Identity Button & Dropdown */}
           <div className="user-switcher-wrapper" ref={dropdownRef} style={{ position: 'relative' }}>
             <button
               className="user-switcher"
-              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              title="Switch user demo profile"
+              onClick={() => setIdentityOpen(!identityOpen)}
+              title={hasIdentity ? `Posting as ${activeUser.name}` : 'Set your identity to post items'}
+              style={{
+                borderColor: !hasIdentity ? '#FF6B35' : undefined,
+                background: !hasIdentity ? '#FFF7ED' : undefined,
+              }}
             >
-              <div className="user-avatar">
-                {activeUser.name.charAt(0)}
+              <div
+                className="user-avatar"
+                style={{
+                  background: hasIdentity ? undefined : '#FF6B35',
+                }}
+              >
+                {avatarLetter}
               </div>
               <span style={{ maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {activeUser.name.split(' ')[0]}
+                {displayName}
               </span>
               <ChevronDown size={14} color="#6B7280" />
             </button>
 
-            {userDropdownOpen && (
+            {identityOpen && (
               <div
                 style={{
                   position: 'absolute',
                   top: 'calc(100% + 8px)',
                   right: 0,
-                  width: '260px',
+                  width: '300px',
                   background: 'white',
-                  borderRadius: '12px',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.12)',
+                  borderRadius: '14px',
+                  boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
                   border: '1px solid #E5E7EB',
-                  padding: '8px',
+                  padding: '16px',
                   zIndex: 100,
                   animation: 'fadeIn 0.15s ease'
                 }}
               >
-                <div style={{ padding: '8px 10px 6px', borderBottom: '1px solid #F3F4F6' }}>
-                  <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Active Demo Student
-                  </p>
-                  <p style={{ fontWeight: 700, color: '#111827', fontSize: '0.92rem' }}>
-                    {activeUser.name}
-                  </p>
-                  <p style={{ fontSize: '0.8rem', color: '#6B7280' }}>
-                    {activeUser.role}
-                  </p>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#EBF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={16} color="#0066CC" />
+                  </div>
+                  <div>
+                    <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>Your Identity</p>
+                    <p style={{ fontSize: '0.75rem', color: '#6B7280' }}>Used when you post items or claims</p>
+                  </div>
                 </div>
 
-                <div style={{ padding: '6px 0' }}>
-                  <p style={{ fontSize: '0.72rem', color: '#9CA3AF', padding: '4px 10px', textTransform: 'uppercase', fontWeight: 600 }}>
-                    Switch Demo Profile:
-                  </p>
-                  {demoUsers.map((u) => (
-                    <button
-                      key={u.id}
-                      onClick={() => {
-                        setActiveUser(u);
-                        setUserDropdownOpen(false);
-                      }}
-                      style={{
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: '8px 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        borderRadius: '8px',
-                        background: activeUser.id === u.id ? '#EBF5FF' : 'transparent',
-                        color: activeUser.id === u.id ? '#0066CC' : '#374151',
-                        fontWeight: activeUser.id === u.id ? 600 : 400,
-                        fontSize: '0.85rem'
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '50%',
-                          background: activeUser.id === u.id ? '#0066CC' : '#E5E7EB',
-                          color: activeUser.id === u.id ? 'white' : '#4B5563',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '11px',
-                          fontWeight: 700
-                        }}
-                      >
-                        {u.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div>{u.name}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>{u.role.split(',')[0]}</div>
-                      </div>
-                    </button>
-                  ))}
+                {/* Form Fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      style={{ fontSize: '0.85rem', padding: '7px 10px' }}
+                      placeholder="e.g. Priya Sharma"
+                      value={draftName}
+                      onChange={e => setDraftName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Campus Email *
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      style={{ fontSize: '0.85rem', padding: '7px 10px' }}
+                      placeholder="you@campus.edu"
+                      value={draftEmail}
+                      onChange={e => setDraftEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                      Phone (optional)
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      style={{ fontSize: '0.85rem', padding: '7px 10px' }}
+                      placeholder="e.g. 9876543210"
+                      value={draftPhone}
+                      onChange={e => setDraftPhone(e.target.value)}
+                    />
+                  </div>
                 </div>
+
+                {/* Save Button */}
+                <button
+                  className="btn btn-primary"
+                  style={{ width: '100%', justifyContent: 'center', padding: '9px', fontSize: '0.875rem' }}
+                  onClick={handleSaveIdentity}
+                  disabled={!draftName.trim() || !draftEmail.trim()}
+                >
+                  <CheckCircle2 size={15} />
+                  <span>Save & Use This Identity</span>
+                </button>
+
+                {hasIdentity && (
+                  <p style={{ fontSize: '0.72rem', color: '#9CA3AF', marginTop: '10px', textAlign: 'center' }}>
+                    Posting as <strong style={{ color: '#374151' }}>{activeUser.email}</strong>
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -255,6 +299,41 @@ export default function Navbar({ activeTab, setActiveTab }) {
           </button>
         </div>
       </div>
+
+      {/* Identity Prompt Banner — shown when user hasn't set name/email */}
+      {!hasIdentity && (
+        <div
+          style={{
+            background: 'linear-gradient(90deg, #FF6B35, #FF8C42)',
+            color: 'white',
+            padding: '8px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            fontSize: '0.82rem',
+            fontWeight: 500
+          }}
+        >
+          <Edit3 size={14} />
+          <span>Set your name &amp; email so others can contact you when you report a lost or found item.</span>
+          <button
+            onClick={() => setIdentityOpen(true)}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: '1px solid rgba(255,255,255,0.4)',
+              color: 'white',
+              borderRadius: '6px',
+              padding: '3px 10px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            Set Profile →
+          </button>
+        </div>
+      )}
 
       {/* Database Connection Guide Modal */}
       {dbModalOpen && (

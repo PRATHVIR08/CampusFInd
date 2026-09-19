@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { DEMO_USERS } from '../services/seedData';
 import { storageService } from '../services/storage';
 import { api } from '../services/api';
 
@@ -53,10 +52,15 @@ export function AppProvider({ children }) {
     refreshData();
   }, []);
 
+  // Update user identity (name, email, phone) — persisted to localStorage
   const setActiveUser = (user) => {
-    storageService.setActiveUser(user);
-    setActiveUserState(user);
-    addToast(`Switched profile to ${user.name} (${user.role})`, 'info');
+    // Generate a stable ID from the email so "My Posts" can match across sessions
+    const userId = user.email
+      ? `user_${user.email.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`
+      : `user_${Date.now()}`;
+    const fullUser = { ...user, id: userId };
+    storageService.setActiveUser(fullUser);
+    setActiveUserState(fullUser);
   };
 
   const createLostItem = async (itemData) => {
@@ -135,19 +139,15 @@ export function AppProvider({ children }) {
     return updated;
   };
 
-  const resetAllData = () => {
-    storageService.resetToDefault();
-    setActiveUserState(DEMO_USERS[0]);
-    refreshData();
-    addToast('Reset data to default campus seed records', 'info');
-  };
+  // Check whether the user has set their identity
+  const hasIdentity = !!(activeUser.name && activeUser.email);
 
   return (
     <AppContext.Provider
       value={{
         activeUser,
         setActiveUser,
-        demoUsers: DEMO_USERS,
+        hasIdentity,
         lostItems,
         foundItems,
         claims,
@@ -171,7 +171,6 @@ export function AppProvider({ children }) {
         deleteFoundItem,
         submitClaim,
         handleClaimDecision,
-        resetAllData,
         refreshData,
         isSupabaseConnected
       }}

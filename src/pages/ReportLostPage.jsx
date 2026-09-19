@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { CATEGORIES, CAMPUS_LOCATIONS } from '../services/seedData';
 import { 
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function ReportLostPage({ setActiveTab }) {
-  const { activeUser, createLostItem, addToast } = useApp();
+  const { activeUser, hasIdentity, createLostItem, addToast } = useApp();
 
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -32,6 +32,12 @@ export default function ReportLostPage({ setActiveTab }) {
   const [submitting, setSubmitting] = useState(false);
   const [submittedItem, setSubmittedItem] = useState(null);
   const [error, setError] = useState('');
+
+  // Sync contact fields when user sets/updates their identity
+  useEffect(() => {
+    setEmail(activeUser.email || '');
+    setPhone(activeUser.phone || '');
+  }, [activeUser.email, activeUser.phone]);
 
   // Handle image upload from file or sample
   const handleFileUpload = (e) => {

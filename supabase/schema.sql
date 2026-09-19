@@ -94,84 +94,11 @@ CREATE INDEX IF NOT EXISTS idx_found_created_at ON found_items(created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_claims_found_item ON claims(found_item_id);
 
--- 7. Seed Initial Campus Records (Optional / Ready for Demo)
-INSERT INTO lost_items (id, title, description, category, location_lost, date_lost, poster_id, poster_name, email, phone, display_name, status)
-VALUES 
-(
-  'lost-101',
-  'Space Gray MacBook Air M2 13-inch',
-  'Left inside a dark gray neoprene sleeve on desk 34 in 3rd-floor quiet study area. Has a GitHub sticker and a small scratch on top left lid.',
-  'Electronics',
-  'Central Library - 3rd Floor Quiet Study',
-  CURRENT_DATE - INTERVAL '1 day',
-  'user_alex',
-  'Alex Rivera',
-  'alex.rivera@campus.edu',
-  '(555) 234-5678',
-  true,
-  'open'
-),
-(
-  'lost-102',
-  'AirPods Pro (2nd Gen) in Matte Black Case',
-  'Lost during Wednesday afternoon Physics lecture in Hall B. Case has a small carabiner attached and left earbud has an orange silicone tip.',
-  'Electronics',
-  'Engineering Complex - Room 204',
-  CURRENT_DATE - INTERVAL '2 days',
-  'user_taylor',
-  'Taylor Chen',
-  'taylor.chen@campus.edu',
-  '(555) 345-6789',
-  true,
-  'open'
-)
-ON CONFLICT (id) DO NOTHING;
+-- 7. Cleanup: Remove any previously seeded fake demo records
+-- Run this block in the Supabase SQL Editor to wipe old test data.
+-- The app is now fully real-time — items come from real user submissions only.
+DELETE FROM claims WHERE id IN ('claim-301');
+DELETE FROM found_items WHERE id IN ('found-201', 'found-202', 'found-203');
+DELETE FROM lost_items WHERE id IN ('lost-101', 'lost-102', 'lost-103', 'lost-104');
 
-INSERT INTO found_items (id, title, description, category, location_found, date_found, holding_location, finder_id, finder_name, email, phone, display_name, status)
-VALUES
-(
-  'found-201',
-  'Dorm Keys on Red University Lanyard',
-  'Found on the outdoor concrete bench near the Science Quad fountain. Set of 3 brass keys, plastic RF dorm access fob, and a mini flashlight.',
-  'Keys',
-  'Science Quad & Chemistry Lab',
-  CURRENT_DATE - INTERVAL '1 day',
-  'Student Union - Room 102 (Lost & Found Desk)',
-  'user_jordan',
-  'Jordan Smith',
-  'jordan.smith@campus.edu',
-  '(555) 876-5432',
-  true,
-  'open'
-),
-(
-  'found-202',
-  'Silver Apple Watch Series 8 with Sport Loop',
-  'Found on the couch in the second-floor lounge of the Student Union. Watch has 40% battery remaining, digital lock code required.',
-  'Electronics',
-  'Student Union - Main Lounge',
-  CURRENT_DATE - INTERVAL '1 day',
-  'Campus Police & Security HQ',
-  'user_desk',
-  'Officer Davis',
-  'campus.security@campus.edu',
-  '(555) 911-0000',
-  true,
-  'open'
-)
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO claims (id, found_item_id, item_title, claimer_id, claimer_name, claimer_email, claimer_phone, description, status)
-VALUES
-(
-  'claim-301',
-  'found-201',
-  'Dorm Keys on Red University Lanyard',
-  'user_alex',
-  'Alex Rivera',
-  'alex.rivera@campus.edu',
-  '(555) 234-5678',
-  'These are my North Quad dorm keys. The lanyard has University Athletics on it and the key fob ends in 412.',
-  'pending'
-)
-ON CONFLICT (id) DO NOTHING;
+-- No seed data. All lost/found items are created by real users via the web app.

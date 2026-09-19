@@ -51,8 +51,8 @@ export const api = {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          return data;
+        if (!error) {
+          return data || [];
         }
       } catch (err) {
         console.warn('Supabase getLostItems error, falling back:', err);
@@ -148,8 +148,8 @@ export const api = {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          return data;
+        if (!error) {
+          return data || [];
         }
       } catch (err) {
         console.warn('Supabase getFoundItems error, falling back:', err);
@@ -243,8 +243,8 @@ export const api = {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          return data;
+        if (!error) {
+          return data || [];
         }
       } catch (err) {
         console.warn('Supabase getClaims error, falling back:', err);

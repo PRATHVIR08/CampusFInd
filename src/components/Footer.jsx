@@ -18,11 +18,11 @@ export default function Footer({ setActiveTab }) {
               <span>Campus<strong>Find</strong></span>
             </div>
             <p style={{ maxWidth: '320px', marginBottom: '16px', lineHeight: 1.6 }}>
-              The official centralized campus platform reuniting university students and staff with their missing valuables quickly, securely, and seamlessly.
+              The official centralized campus platform for Sahyadri college of engineering and management reuniting university students and staff with their missing valuables quickly, securely, and seamlessly.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button 
-                onClick={resetAllData} 
+              <button
+                onClick={resetAllData}
                 className="btn btn-outline btn-sm"
                 title="Reset local data to default demo state"
                 style={{ fontSize: '0.78rem' }}
@@ -68,11 +68,11 @@ export default function Footer({ setActiveTab }) {
               Campus Drop-offs
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem', color: '#4B5563' }}>
-              <li>Student Union Room 102</li>
+              <li>Basic science departemnet</li>
               <li>Central Library Front Desk</li>
-              <li>Campus Police HQ (North Gate)</li>
-              <li>Recreation Center Service Desk</li>
-              <li>Dining Hall Manager Office</li>
+              <li>security room(near the front gate)</li>
+              <li>Addmission block</li>
+
             </ul>
           </div>
 
@@ -84,11 +84,11 @@ export default function Footer({ setActiveTab }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4B5563' }}>
                 <MapPin size={16} color="#0066CC" />
-                <span>Student Union, Room 102</span>
+                <span>Basic science departemnet</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4B5563' }}>
                 <Phone size={16} color="#22C55E" />
-                <span>(555) 911-LOST (5678)</span>
+                <span>Dr.Prashanth (his phone number)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4B5563' }}>
                 <Mail size={16} color="#0066CC" />
@@ -107,9 +107,7 @@ export default function Footer({ setActiveTab }) {
             © {new Date().getFullYear()} CampusFind. Built for University Students & Campus Community.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem' }}>
-            <span>Made with</span>
-            <Heart size={14} color="#EF4444" fill="#EF4444" />
-            <span>for campus safety</span>
+
           </div>
         </div>
       </div>
