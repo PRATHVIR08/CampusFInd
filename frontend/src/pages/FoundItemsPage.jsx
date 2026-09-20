@@ -79,11 +79,11 @@ export default function FoundItemsPage({ setActiveTab, onSelectItem, onOpenClaim
   return (
     <div className="container" style={{ padding: '32px 16px' }}>
       {/* Header Banner */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="page-header-row">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
             <span className="badge badge-found">Good Samaritan Vault</span>
-            <h1 style={{ fontSize: '2rem', color: '#111827' }}>
+            <h1 className="page-title">
               Found Items on Campus
             </h1>
           </div>
@@ -104,8 +104,8 @@ export default function FoundItemsPage({ setActiveTab, onSelectItem, onOpenClaim
       {/* Filter & Search Bar */}
       <div className="filter-bar">
         {/* Search row */}
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '260px', position: 'relative' }}>
+        <div className="filter-row-wrap">
+          <div className="filter-field" style={{ position: 'relative' }}>
             <Search 
               size={18} 
               color="#9CA3AF" 
@@ -122,7 +122,7 @@ export default function FoundItemsPage({ setActiveTab, onSelectItem, onOpenClaim
           </div>
 
           {/* Where Found Location Select */}
-          <div style={{ minWidth: '180px' }}>
+          <div className="filter-field-select">
             <select
               className="filter-select"
               style={{ width: '100%', height: '100%' }}
@@ -142,7 +142,7 @@ export default function FoundItemsPage({ setActiveTab, onSelectItem, onOpenClaim
           </div>
 
           {/* Date Filter */}
-          <div style={{ minWidth: '140px' }}>
+          <div className="filter-field-select">
             <select
               className="filter-select"
               style={{ width: '100%', height: '100%' }}
@@ -157,7 +157,7 @@ export default function FoundItemsPage({ setActiveTab, onSelectItem, onOpenClaim
           </div>
 
           {/* Sort Dropdown */}
-          <div style={{ minWidth: '150px' }}>
+          <div className="filter-field-select">
             <select
               className="filter-select"
               style={{ width: '100%', height: '100%' }}

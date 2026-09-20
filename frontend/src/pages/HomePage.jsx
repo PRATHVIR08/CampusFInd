@@ -105,7 +105,6 @@ export default function HomePage({ setActiveTab, onSelectItem }) {
             <button
               className="btn btn-primary btn-lg"
               onClick={() => setActiveTab('report-lost')}
-              style={{ minWidth: '220px' }}
             >
               <FileText size={20} />
               <span>Report Lost Item</span>
@@ -114,7 +113,6 @@ export default function HomePage({ setActiveTab, onSelectItem }) {
             <button
               className="btn btn-secondary btn-lg"
               onClick={() => setActiveTab('report-found')}
-              style={{ minWidth: '220px' }}
             >
               <CheckCircle2 size={20} />
               <span>I Found Something</span>
@@ -171,7 +169,7 @@ export default function HomePage({ setActiveTab, onSelectItem }) {
             </div>
 
             {/* Feed Filters */}
-            <div style={{ display: 'flex', gap: '8px', background: '#FFFFFF', padding: '4px', borderRadius: '10px', border: '1px solid #E5E7EB' }}>
+            <div className="feed-filter-bar">
               <button
                 className={`btn btn-sm ${feedFilter === 'all' ? 'btn-primary' : ''}`}
                 style={feedFilter !== 'all' ? { color: '#4B5563' } : {}}

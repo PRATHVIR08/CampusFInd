@@ -51,7 +51,7 @@ export default function ContactPage() {
     <div className="container" style={{ padding: '36px 16px', maxWidth: '1000px' }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <h1 style={{ fontSize: '2.2rem', color: '#111827', marginBottom: '8px' }}>
+        <h1 className="page-title" style={{ marginBottom: '8px' }}>
           Campus Lost & Found Directory
         </h1>
         <p style={{ color: '#6B7280', maxWidth: '580px', margin: '0 auto' }}>

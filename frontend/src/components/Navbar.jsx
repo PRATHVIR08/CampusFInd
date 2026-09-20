@@ -138,6 +138,19 @@ export default function Navbar({ activeTab, setActiveTab }) {
               Contact
             </button>
           </li>
+          <li className="nav-mobile-only">
+            <button
+              type="button"
+              className="nav-link"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setDbModalOpen(true);
+              }}
+            >
+              <Database size={16} />
+              Database ({isSupabaseConnected ? 'Cloud' : 'Local'})
+            </button>
+          </li>
         </ul>
 
         {/* User Identity & Actions */}
@@ -161,28 +174,14 @@ export default function Navbar({ activeTab, setActiveTab }) {
               >
                 {avatarLetter}
               </div>
-              <span style={{ maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span className="nav-user-label">
                 {displayName}
               </span>
               <ChevronDown size={14} color="#6B7280" />
             </button>
 
             {identityOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: '300px',
-                  background: 'white',
-                  borderRadius: '14px',
-                  boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
-                  border: '1px solid #E5E7EB',
-                  padding: '16px',
-                  zIndex: 100,
-                  animation: 'fadeIn 0.15s ease'
-                }}
-              >
+              <div className="identity-dropdown-panel">
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                   <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#EBF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -259,6 +258,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
           {/* Database Cloud Status Pill */}
           <button
+            className="nav-db-pill"
             onClick={() => setDbModalOpen(true)}
             style={{
               display: 'flex',
@@ -302,33 +302,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
       {/* Identity Prompt Banner — shown when user hasn't set name/email */}
       {!hasIdentity && (
-        <div
-          style={{
-            background: 'linear-gradient(90deg, #FF6B35, #FF8C42)',
-            color: 'white',
-            padding: '8px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            fontSize: '0.82rem',
-            fontWeight: 500
-          }}
-        >
-          <Edit3 size={14} />
-          <span>Set your name &amp; email so others can contact you when you report a lost or found item.</span>
+        <div className="nav-identity-banner">
+          <Edit3 size={14} aria-hidden />
+          <span>Set your name &amp; email so others can contact you when you report items.</span>
           <button
+            type="button"
+            className="nav-identity-banner-btn"
             onClick={() => setIdentityOpen(true)}
-            style={{
-              background: 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(255,255,255,0.4)',
-              color: 'white',
-              borderRadius: '6px',
-              padding: '3px 10px',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
           >
             Set Profile →
           </button>

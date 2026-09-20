@@ -117,7 +117,7 @@ export default function MyPostsPage({ setActiveTab, onSelectItem }) {
       </div>
 
       {/* Tabs Navigation */}
-      <div style={{ display: 'flex', borderBottom: '2px solid #E5E7EB', marginBottom: '24px', gap: '8px' }}>
+      <div className="tabs-scroll">
         <button
           onClick={() => setActiveTabSection('found')}
           style={{
